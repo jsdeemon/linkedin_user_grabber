@@ -4,6 +4,9 @@ import pandas as pd
 from requests_html import HTML
 from requests_html import HTMLSession 
 
+from time import sleep
+import random
+
 def get_source(url):
     """Return the source code for the provided URL. 
 
@@ -60,14 +63,26 @@ def scrape_google(query):
     resultQuery = "+".join(oldQuery)
     # https://www.google.com/search?q=site%3Alinkedin.com%2Fin%2F+%22python+developer+London
     # response = get_source("https://www.google.co.uk/search?q=" + resultQuery)
+  
+
+    # print(parse_results(response))
     response = get_source("https://www.google.com/search?q=site%3Alinkedin.com%2Fin%2F+%22" + resultQuery)
+    print(response)
+    pages = []
+    pages = parse_results(response)
+    print(pages)
+    print(type(pages))
+    fullLinks = []
 
-    print(parse_results(response))
-    # find numbers of pages
-    # <a aria-label="Page 3"> 
+    if len(pages) > 1:
+        for x in range(len(pages)):
+            print(pages[x]['link'])
 
-    links = list(response.html.absolute_links)
-    google_domains = ('https://www.google.', 
+        # тут сделать запросы к странице и вытащить ссылки и сохранить их в формат CSV
+            resp = get_source(pages[x]['link'])
+            links = list(resp.html.absolute_links)
+
+            google_domains = ('https://www.google.', 
                        'https://translate.',
                       'https://google.', 
                       'https://webcache.googleusercontent.', 
@@ -76,11 +91,80 @@ def scrape_google(query):
                       'https://support.google.',
                       'https://maps.google.')
 
-    for url in links[:]:
-        if url.startswith(google_domains):
-            links.remove(url)
+            for url in links[:]:
+                if url.startswith(google_domains):
+                    links.remove(url)
+        
+            fullLinks.append(links)
+            sleep(random.randint(3, 10))
+        #return fullLinks
+    
+    else: 
+        links = list(response.html.absolute_links)
+        google_domains = ('https://www.google.', 
+                       'https://translate.',
+                      'https://google.', 
+                      'https://webcache.googleusercontent.', 
+                      'http://webcache.googleusercontent.', 
+                      'https://policies.google.',
+                      'https://support.google.',
+                      'https://maps.google.')
 
-    return links 
+    # # Сделать цикл по pages - для каждой страницы делать
+
+        for url in links[:]:
+            if url.startswith(google_domains):
+                links.remove(url)
+        
+        fullLinks.append(links)
+
+    return fullLinks 
+
+    # print(len(pages))
+    # find numbers of pages
+    # <a aria-label="Page 3"> 
+
+    # if has only one page with results 
+    
+    # if len(pages) == 1:
+        
+    #     links = list(response.html.absolute_links)
+    #     google_domains = ('https://www.google.', 
+    #                    'https://translate.',
+    #                   'https://google.', 
+    #                   'https://webcache.googleusercontent.', 
+    #                   'http://webcache.googleusercontent.', 
+    #                   'https://policies.google.',
+    #                   'https://support.google.',
+    #                   'https://maps.google.')
+
+    # # Сделать цикл по pages - для каждой страницы делать
+
+    #     for url in links[:]:
+    #         if url.startswith(google_domains):
+    #             links.remove(url)
+
+    #     return links 
+    # else:
+    #     response = get_source("https://www.google.com/search?q=site%3Alinkedin.com%2Fin%2F+%22" + resultQuery)
+    #     links = list(response.html.absolute_links)
+    #     google_domains = ('https://www.google.', 
+    #                    'https://translate.',
+    #                   'https://google.', 
+    #                   'https://webcache.googleusercontent.', 
+    #                   'http://webcache.googleusercontent.', 
+    #                   'https://policies.google.',
+    #                   'https://support.google.',
+    #                   'https://maps.google.')
+
+    # # Сделать цикл по pages - для каждой страницы делать
+
+    #     for url in links[:]:
+    #         if url.startswith(google_domains):
+    #             links.remove(url)
+
+    #     return links 
+
 
 
 

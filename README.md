@@ -1,4 +1,6 @@
 ### Задача 
+
+### Oшибки - как обойти гугл 429 - too many requests 
 1 - подключаться к гуглу и парсить оттуда данные пользователей поключевым словам. 
 https://practicaldatascience.co.uk/data-science/how-to-scrape-google-search-results-using-python
 
